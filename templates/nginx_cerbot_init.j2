@@ -12,8 +12,8 @@
 ##
 
 server {
-	listen 80 default_server;
-	listen [::]:80 default_server;
+  listen 80 default_server;
+  listen [::]:80 default_server;
 
   server_name {{ domain_name }};
   server_tokens off; ## Don't show the nginx version number, a security best practice
@@ -22,12 +22,12 @@ server {
   access_log  /var/log/nginx/letsencrypt_access.log;
   error_log   /var/log/nginx/letsencrypt_error.log;
 
-	location ~ /\.well-known/acme-challenge {
+  location ~ /\.well-known/acme-challenge {
     allow all;
-	  root /var/www/letsencrypt;
-	}
+    root /var/www/letsencrypt;
+  }
 
-	# Deny access to . files
+  # Deny access to . files
   location ~ /\. { deny all; access_log off; log_not_found off; }
 
 }

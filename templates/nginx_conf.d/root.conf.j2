@@ -1,0 +1,11 @@
+location / {
+  proxy_pass {{ nginx_certbot_app.url }};
+  proxy_http_version 1.1;
+  proxy_set_header Upgrade $http_upgrade;
+  proxy_set_header Connection 'upgrade';
+  proxy_set_header Host $host;
+  proxy_cache_bypass $http_upgrade;
+
+  include /etc/nginx/conf.d/{{ nginx_certbot_domain_name }}.d/root.d/*.conf;
+}
+

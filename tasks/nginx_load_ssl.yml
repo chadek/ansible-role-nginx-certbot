@@ -22,11 +22,30 @@
 #   shell: openssl dhparam -out /etc/ssl/certs/dhparam.pem 4096
 #   when: not letsencrypt_cert.stat.exists
 
-- name: Nginx SSL | Copy nginx conf to sites-available
+- name: Nginx SSL | Create conf.d subdirectories
+  ansible.builtin.file:
+    path: {{ item.path }}
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+  with_items:
+    - path: /etc/nginx/conf.d/{{ nginx_certbot_domain_name }}.d/
+    - path: /etc/nginx/conf.d/{{ nginx_certbot_domain_name }}.d/root.d/
+
+
+- name: Nginx SSL | Copy nginx configurations
   template:
-    src: ./templates/{{ nginx_cerbot_ssl_template_name }}.j2
-    dest: /etc/nginx/sites-available/default
+    src: {{ item.src }}
+    dest: {{ item.dest }}
     owner: root
     group: root
     mode: 0644
+  with_items:
+    - src: ./templates/nginx_conf.d/README.j2
+      dest: /etc/nginx/conf.d/{{ nginx_certbot_app }}.d/README
+    - src: ./templates/nginx_conf.d/root.conf.j2
+      dest: /etc/nginx/conf.d/{{ nginx_certbot_app }}.d/root.conf
+    - src: ./templates/{{ nginx_cerbot_ssl_template_name }}.j2
+      dest: /etc/nginx/conf.d/{{ nginx_certbot_domain_name }}.conf
   notify: restart nginx
