@@ -1,0 +1,32 @@
+---
+- name: Nginx SSL | Copy conf snippet with strong ssl settings
+  template:
+    src: files/ssl-params.conf
+    dest: /etc/nginx/snippets/ssl-params.conf
+    owner: root
+    group: root
+    mode: 0644
+
+# - name: Nginx SSL | Check if Diffie-Hellman group already exists
+#   stat:
+#     path: /etc/ssl/certs/dhparam.pem
+#   register: letsencrypt_cert
+
+
+- name: Nginx SSL | Generate strong Diffie-Hellman parameters (may take a few minutes)
+  community.crypto.openssl_dhparam:
+    path: /etc/ssl/certs/dhparam.pem
+    size: 4096
+
+# - name: Nginx SSL | Generate a strong Diffie-Hellman group if doesn't exist (may take a few minutes)
+#   shell: openssl dhparam -out /etc/ssl/certs/dhparam.pem 4096
+#   when: not letsencrypt_cert.stat.exists
+
+- name: Nginx SSL | Copy nginx conf to sites-available
+  template:
+    src: ./templates/{{ nginx_cerbot_ssl_template_name }}.j2
+    dest: /etc/nginx/sites-available/default
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart nginx

@@ -1,0 +1,64 @@
+---
+- name: Certbot | Create repository to resolve letsencrypt challenge
+  file:
+    path: /var/www/letsencrypt/.well-known/acme-challenge/
+    state: directory
+    owner: www-data
+    group: www-data
+    mode: 0775
+
+- name: Certbot | Install Certbot's nginx package
+  package:
+    name: certbot
+    state: latest
+
+- name: Certbot | Check if certificate already exists
+  stat:
+    path: /etc/letsencrypt/live/{{ nginx_certbot_domain_name }}/cert.pem
+  register: letsencrypt_cert
+
+- name: Certbot | Generate new certificate if doesn't exist
+  shell: "certbot certonly --authenticator webroot -w /var/www/letsencrypt  --noninteractive --agree-tos --email {{ nginx_certbot_certbot_email }} -d {{ nginx_certbot_domain_name }} >> /var/log/certbot.log"
+  when: not letsencrypt_cert.stat.exists
+
+- name: Certbot | Create repository to store pre renewal hook
+  file:
+    path: /etc/letsencrypt/renewal-hooks/pre
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Certbot | Create repository to store post renewal hook
+  file:
+    path: /etc/letsencrypt/renewal-hooks/post
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Certbot | Send certbot pre hook to open http port only during challenge resolution
+  template:
+    src: templates/pre_ufw.j2
+    dest: /etc/letsencrypt/renewal-hooks/pre/ufw.sh
+    owner: root
+    group: root
+    mode: 0740
+  when: "nginx_certbot_deny_http == true"
+
+- name: Certbot | Send certbot post hook to close http port after challenge resolution
+  template:
+    src: templates/post_ufw.j2
+    dest: /etc/letsencrypt/renewal-hooks/post/ufw.sh
+    owner: root
+    group: root
+    mode: 0740
+  when: "nginx_certbot_deny_http == true"
+
+- name: Certbot | Send certbot post hook to reload nginx configuration on certificate renewal
+  template:
+    src: files/reload-nginx.sh
+    dest: /etc/letsencrypt/renewal-hooks/post/restart-nginx.sh
+    owner: root
+    group: root
+    mode: 0740
