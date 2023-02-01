@@ -58,6 +58,9 @@ server {
     proxy_set_header Connection 'upgrade';
     proxy_set_header Host $host;
     proxy_cache_bypass $http_upgrade;
+
+    include /etc/nginx/sites-enabled/default_root.d/*.conf; # TODO make sure that the folder exists
   }
 
+  include /etc/nginx/sites-enabled/default_server.d/*.conf; # TODO make sure that the folder exists
 }
