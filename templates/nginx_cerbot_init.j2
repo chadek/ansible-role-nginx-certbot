@@ -15,7 +15,7 @@ server {
   listen 80 default_server;
   listen [::]:80 default_server;
 
-  server_name {{ domain_name }};
+  server_name {{ nginx_certbot_domain_name }};
   server_tokens off; ## Don't show the nginx version number, a security best practice
 
   ## Individual nginx logs for this vhost

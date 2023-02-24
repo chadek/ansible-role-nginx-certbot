@@ -1,2 +1,10 @@
 ---
 # defaults file for roles/nginx_certbot
+nginx_certbot_domain_name: app.example.com
+nginx_certbot_certbot_email: some.mail@example.com
+nginx_certbot_deny_http: false
+nginx_certbot_app: {
+  name: app,
+  url: "http://localhost:2000",
+  template_name: root
+}
