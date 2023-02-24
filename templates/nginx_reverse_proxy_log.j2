@@ -13,7 +13,7 @@
 
 ### HTTP server for let'sencrypt validation
 server {
-  listen [::]:80 default_server;
+  listen [::]:80;
 
   server_name {{ nginx_certbot_domain_name }};
   server_tokens off; ## Don't show the nginx version number, a security best practice
@@ -29,7 +29,9 @@ server {
 
   # Deny access to anything else
   location / {
-    { deny all; access_log off; log_not_found off; }
+    deny all; 
+    access_log off; 
+    log_not_found off;
   }
 
 }
@@ -55,13 +57,6 @@ server {
   access_log  /var/log/nginx/{{ nginx_certbot_app.name }}_access.log proxy_https;
   error_log   /var/log/nginx/{{ nginx_certbot_app.name }}_error.log;
 
-  location / {
-    proxy_pass {{ nginx_certbot_app.url }};
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection 'upgrade';
-    proxy_set_header Host $host;
-    proxy_cache_bypass $http_upgrade;
-  }
+  include /etc/nginx/conf.d/{{ nginx_certbot_domain_name }}.d/*.conf;
 
 }

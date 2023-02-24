@@ -1,5 +1,6 @@
 ---
-- name: restart nginx
+- name: reload nginx
+  tags: notest
   systemd:
     name: nginx
-    state: restarted
+    state: reloaded
