@@ -13,7 +13,7 @@
 
 ### HTTP server for let'sencrypt validation
 server {
-  listen [::]:80 default_server;
+  listen [::]:80;
 
   server_name {{ nginx_certbot_domain_name }};
   server_tokens off; ## Don't show the nginx version number, a security best practice
@@ -29,7 +29,9 @@ server {
 
   # Deny access to anything else
   location / {
-    { deny all; access_log off; log_not_found off; }
+    deny all; 
+    access_log off; 
+    log_not_found off;
   }
 
 }

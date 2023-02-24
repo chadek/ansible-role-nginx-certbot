@@ -5,7 +5,5 @@ location / {
   proxy_set_header Connection 'upgrade';
   proxy_set_header Host $host;
   proxy_cache_bypass $http_upgrade;
-
-  include /etc/nginx/conf.d/{{ nginx_certbot_domain_name }}.d/root.d/*.conf;
 }
 

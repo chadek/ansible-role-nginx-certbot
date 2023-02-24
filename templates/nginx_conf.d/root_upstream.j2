@@ -1,0 +1,11 @@
+upstream vaultwarden-default {
+  zone vaultwarden-default 64k;
+  server 127.0.0.1:8000;
+  keepalive 2;
+}
+upstream vaultwarden-ws {
+  zone vaultwarden-ws 64k;
+  server 127.0.0.1:3012;
+  keepalive 2;
+}
+

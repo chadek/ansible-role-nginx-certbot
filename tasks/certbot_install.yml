@@ -17,25 +17,34 @@
     path: /etc/letsencrypt/live/{{ nginx_certbot_domain_name }}/cert.pem
   register: letsencrypt_cert
 
+- name: Certbot | Copy nginx conf for certbot init 
+  template:
+    src: templates/nginx_cerbot_init.j2
+    dest: /etc/nginx/sites-available/default
+    owner: root
+    group: root
+    mode: 0644
+  when: not letsencrypt_cert.stat.exists
+  notify: reload nginx
+
+- name: Certbot | Flush handlers
+  meta: flush_handlers
+
 - name: Certbot | Generate new certificate if doesn't exist
+  tags: notest
   shell: "certbot certonly --authenticator webroot -w /var/www/letsencrypt  --noninteractive --agree-tos --email {{ nginx_certbot_certbot_email }} -d {{ nginx_certbot_domain_name }} >> /var/log/certbot.log"
   when: not letsencrypt_cert.stat.exists
 
-- name: Certbot | Create repository to store pre renewal hook
+- name: Certbot | Create repository to store renewal hook
   file:
-    path: /etc/letsencrypt/renewal-hooks/pre
+    path: "/etc/letsencrypt/renewal-hooks/{{ item }}"
     state: directory
     owner: root
     group: root
     mode: 0755
-
-- name: Certbot | Create repository to store post renewal hook
-  file:
-    path: /etc/letsencrypt/renewal-hooks/post
-    state: directory
-    owner: root
-    group: root
-    mode: 0755
+  loop:
+    - pre
+    - post
 
 - name: Certbot | Send certbot pre hook to open http port only during challenge resolution
   template:
