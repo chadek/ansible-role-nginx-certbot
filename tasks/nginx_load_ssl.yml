@@ -7,25 +7,23 @@
     group: root
     mode: 0644
 
-# - name: Nginx SSL | Check if Diffie-Hellman group already exists
-#   stat:
-#     path: /etc/ssl/certs/dhparam.pem
-#   register: letsencrypt_cert
-
-
 - name: Nginx SSL | Generate strong Diffie-Hellman parameters (may take a few minutes)
   community.crypto.openssl_dhparam:
     path: /etc/ssl/certs/dhparam.pem
     size: 4096
 
-# - name: Nginx SSL | Generate a strong Diffie-Hellman group if doesn't exist (may take a few minutes)
-#   shell: openssl dhparam -out /etc/ssl/certs/dhparam.pem 4096
-#   when: not letsencrypt_cert.stat.exists
+- name: Nginx SSL | Create nginx conf directory
+  file:
+    path: "/etc/nginx/conf.d/{{ nginx_certbot_domain_name }}.d"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
 
 - name: Nginx SSL | Copy nginx conf to sites-available
   template:
-    src: ./templates/{{ nginx_cerbot_ssl_template_name }}.j2
-    dest: /etc/nginx/sites-available/default
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
     owner: root
     group: root
     mode: 0644

@@ -14,7 +14,7 @@
 
 - name: Certbot | Check if certificate already exists
   stat:
-    path: /etc/letsencrypt/live/{{ nginx_certbot_domain_name }}/cert.pem
+    path: "/etc/letsencrypt/live/{{ nginx_certbot_domain_name }}/cert.pem"
   register: letsencrypt_cert
 
 - name: Certbot | Copy nginx conf for certbot init 
