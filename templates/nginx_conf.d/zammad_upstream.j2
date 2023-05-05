@@ -1,0 +1,13 @@
+upstream zammad-railsserver {
+    zone zammad-railsserver 64k;
+    server 127.0.0.1:3000;
+    keepalive 2;
+}
+
+upstream zammad-websocket {
+    zone zammad-websocket 64k;
+    server 127.0.0.1:6042;
+    keepalive 2;
+}
+
+
