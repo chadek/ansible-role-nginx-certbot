@@ -3,9 +3,10 @@
 nginx_certbot_domain_name: app.example.com
 nginx_certbot_certbot_email: some.mail@example.com
 nginx_certbot_deny_http: false
-nginx_certbot_app: {
-  name: app,
-  url: "http://localhost:2000",
-  http_template_name: root,
-  upstream_template_name: root_upstream, 
-}
+nginx_certbot_app:
+  {
+    name: app,
+    url: "http://localhost:2000",
+    http_template_name: root,
+    upstream_template_name: root_upstream,
+  }

@@ -1,11 +1,11 @@
 ---
 - name: Nginx SSL | Copy conf snippet with strong ssl settings
-  template:
+  ansible.builtin.template:
     src: files/ssl-params.conf
     dest: /etc/nginx/snippets/ssl-params.conf
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
 
 - name: Nginx SSL | Generate strong Diffie-Hellman parameters (may take a few minutes)
   community.crypto.openssl_dhparam:
@@ -13,23 +13,35 @@
     size: 4096
 
 - name: Nginx SSL | Create nginx conf directory
-  file:
+  ansible.builtin.file:
     path: "/etc/nginx/conf.d/{{ nginx_certbot_domain_name }}.d"
     state: directory
     owner: root
     group: root
-    mode: 0755
+    mode: "0755"
 
 - name: Nginx SSL | Copy nginx conf to sites-available
-  template:
+  ansible.builtin.template:
     src: "{{ item.src }}"
     dest: "{{ item.dest }}"
     owner: root
     group: root
-    mode: 0644
+    mode: "0644"
   loop:
-    - { src: "templates/nginx_conf.d/README.j2", dest: "/etc/nginx/conf.d/{{ nginx_certbot_domain_name }}.d/README" }
-    - { src: "templates/nginx_conf.d/{{ nginx_certbot_app.http_template_name }}.j2", dest: "/etc/nginx/conf.d/{{ nginx_certbot_domain_name }}.d/{{ nginx_certbot_app.http_template_name }}.conf" }
-    - { src: "templates/nginx_conf.d/{{ nginx_certbot_app.upstream_template_name }}.j2", dest: "/etc/nginx/conf.d/{{ nginx_certbot_domain_name }}.d/{{ nginx_certbot_app.upstream_template_name }}.upstream" }
-    - { src: "templates/nginx_reverse_proxy.j2", dest: "/etc/nginx/conf.d/{{ nginx_certbot_domain_name }}.conf" }
+    - {
+      src: "templates/nginx_conf.d/README.j2",
+      dest: "/etc/nginx/conf.d/{{ nginx_certbot_domain_name }}.d/README",
+    }
+    - {
+      src: "templates/nginx_conf.d/{{ nginx_certbot_app.http_template_name }}.j2",
+      dest: "/etc/nginx/conf.d/{{ nginx_certbot_domain_name }}.d/{{ nginx_certbot_app.http_template_name }}.conf",
+    }
+    - {
+      src: "templates/nginx_conf.d/{{ nginx_certbot_app.upstream_template_name }}.j2",
+      dest: "/etc/nginx/conf.d/{{ nginx_certbot_domain_name }}.d/{{ nginx_certbot_app.upstream_template_name }}.upstream",
+    }
+    - {
+      src: "templates/nginx_reverse_proxy.j2",
+      dest: "/etc/nginx/conf.d/{{ nginx_certbot_domain_name }}.conf",
+    }
   notify: reload nginx

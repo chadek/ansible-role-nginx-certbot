@@ -4,13 +4,14 @@ galaxy_info:
   description: ansible role to install and setup nginx with https server templates using certbot for linux
   company: your company (optional)
   license: license GPL-3.0-only
-  min_ansible_version: 2.4
+  min_ansible_version: "2.4"
   galaxy_tags:
     - nginx
     - certbot
     - https
     - ssl
 
-dependencies: []
+dependencies:
+  []
   # List your role dependencies here, one per line. Be sure to remove the '[]' above,
   # if you add dependencies to this list.

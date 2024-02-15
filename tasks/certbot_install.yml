@@ -1,73 +1,77 @@
 ---
 - name: Certbot | Create repository to resolve letsencrypt challenge
-  file:
+  ansible.builtin.file:
     path: /var/www/letsencrypt/.well-known/acme-challenge/
     state: directory
     owner: www-data
     group: www-data
-    mode: 0775
+    mode: '0775'
 
 - name: Certbot | Install Certbot's nginx package
-  package:
+  ansible.builtin.package:
     name: certbot
-    state: latest
+    state: present
 
 - name: Certbot | Check if certificate already exists
-  stat:
+  ansible.builtin.stat:
     path: "/etc/letsencrypt/live/{{ nginx_certbot_domain_name }}/cert.pem"
   register: letsencrypt_cert
 
-- name: Certbot | Copy nginx conf for certbot init 
-  template:
+- name: Certbot | Copy nginx conf for certbot init
+  ansible.builtin.template:
     src: templates/nginx_cerbot_init.j2
     dest: /etc/nginx/sites-available/default
     owner: root
     group: root
-    mode: 0644
+    mode: '0644'
   when: not letsencrypt_cert.stat.exists
   notify: reload nginx
 
 - name: Certbot | Flush handlers
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers
 
 - name: Certbot | Generate new certificate if doesn't exist
   tags: notest
-  shell: "certbot certonly --authenticator webroot -w /var/www/letsencrypt  --noninteractive --agree-tos --email {{ nginx_certbot_certbot_email }} -d {{ nginx_certbot_domain_name }} >> /var/log/certbot.log"
+  ansible.builtin.command: >-
+    certbot certonly --authenticator webroot -w /var/www/letsencrypt  --noninteractive --agree-tos
+    --email {{ nginx_certbot_certbot_email }}-d {{ nginx_certbot_domain_name }} >> /var/log/certbot.log
+  register: output
+  changed_when: output.rc != 0
   when: not letsencrypt_cert.stat.exists
 
 - name: Certbot | Create repository to store renewal hook
-  file:
+  ansible.builtin.file:
     path: "/etc/letsencrypt/renewal-hooks/{{ item }}"
     state: directory
     owner: root
     group: root
-    mode: 0755
+    mode: '0755'
   loop:
     - pre
     - post
 
 - name: Certbot | Send certbot pre hook to open http port only during challenge resolution
-  template:
+  ansible.builtin.template:
     src: templates/pre_ufw.j2
     dest: /etc/letsencrypt/renewal-hooks/pre/ufw.sh
     owner: root
     group: root
-    mode: 0740
-  when: "nginx_certbot_deny_http == true"
+    mode: '0740'
+  when: nginx_certbot_deny_http
 
 - name: Certbot | Send certbot post hook to close http port after challenge resolution
-  template:
+  ansible.builtin.template:
     src: templates/post_ufw.j2
     dest: /etc/letsencrypt/renewal-hooks/post/ufw.sh
     owner: root
     group: root
-    mode: 0740
-  when: "nginx_certbot_deny_http == true"
+    mode: '0740'
+  when: nginx_certbot_deny_http
 
 - name: Certbot | Send certbot post hook to reload nginx configuration on certificate renewal
-  template:
+  ansible.builtin.template:
     src: files/reload-nginx.sh
     dest: /etc/letsencrypt/renewal-hooks/post/restart-nginx.sh
     owner: root
     group: root
-    mode: 0740
+    mode: '0740'
