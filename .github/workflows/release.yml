@@ -13,7 +13,7 @@ name: Release
 
 defaults:
   run:
-    working-directory: "chadek.nginx-certbot"
+    working-directory: "chadek.nginx_certbot"
 
 jobs:
   release:
@@ -23,7 +23,7 @@ jobs:
       - name: Check out the codebase.
         uses: actions/checkout@v4
         with:
-          path: "chadek.nginx-certbot"
+          path: "chadek.nginx_certbot"
 
       - name: Set up Python 3.
         uses: actions/setup-python@v5
