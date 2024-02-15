@@ -1,4 +1,9 @@
 ---
-- include_tasks: nginx_install.yml
-- include_tasks: certbot_install.yml
-- include_tasks: nginx_load_ssl.yml
+- name: Nginx Certbot | Include nginx_install.yml
+  ansible.builtin.include_tasks: nginx_install.yml
+
+- name: Nginx Certbot | Include certbot_install.yml
+  ansible.builtin.include_tasks: certbot_install.yml
+
+- name: Nginx Certbot | Include nginx_load_ssl.yml
+  ansible.builtin.include_tasks: nginx_load_ssl.yml

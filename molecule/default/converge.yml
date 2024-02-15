@@ -5,13 +5,13 @@
 
   pre_tasks:
     - name: Update apt cache
-      apt: update_cache=true cache_valid_time=600
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 600
       when: ansible_os_family == 'Debian'
       changed_when: false
-        
+
   tasks:
     - name: "Include nginx-certbot"
-      include_role:
+      ansible.builtin.include_role:
         name: "ansible-role-nginx-certbot"
-
-        

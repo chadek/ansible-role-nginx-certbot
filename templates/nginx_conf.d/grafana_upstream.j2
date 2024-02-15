@@ -1,0 +1,7 @@
+upstream grafana-default {
+  zone grafana-default 64k;
+  server 127.0.0.1:3000;
+  keepalive 2;
+}
+
+
