@@ -1,38 +1,60 @@
-Role Name
-=========
+# Ansible Role: Nginx Certbot
 
-A brief description of the role goes here.
+This Ansible role automates the setup of HTTPS encryption for Nginx web servers using Let's Encrypt certificates via Certbot.
 
-Requirements
-------------
+## Requirements
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+- Ansible installed on the control node.
+- Nginx installed and configured on the target server(s).
+- Domain name(s) pointed to the server(s) where Nginx is running.
 
-Role Variables
---------------
+## Role Variables
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+Below are the variables used in this role, along with their descriptions:
 
-Dependencies
-------------
+- `nginx_certbot_domain_name`: The domain name for which the SSL certificate will be obtained.
+- `nginx_certbot_certbot_email`: Email address to use for Let's Encrypt certificate registration.
+- `nginx_certbot_deny_http`: Whether to deny HTTP access after enabling HTTPS. Default is `false`.
+- `nginx_certbot_proxy_protocol`: Whether to enable support for the PROXY protocol. Default is `false`.
+- `nginx_certbot_app`: Configuration for the application served by Nginx:
+  - `name`: Name of the application.
+  - `url`: URL where the application is hosted.
+  - `http_template_name`: Name of the Nginx HTTP template.
+  - `upstream_template_name`: Name of the Nginx upstream template.
 
-A list of other roles hosted on Galaxy should go here, plus any details in regards to parameters that may need to be set for other roles, or variables that are used from other roles.
+These variables can be customized in your playbook to match your specific environment and configuration requirements.
 
-Example Playbook
-----------------
+## Dependencies
 
-Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
+None.
 
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
+## Example Playbook
 
-License
--------
+```yaml
+- hosts: web_servers
+  roles:
+    - role: chadek.nginx_certbot
+      vars:
+        nginx_certbot_domain_name: app.example.com
+        nginx_certbot_certbot_email: some.mail@example.com
+        nginx_certbot_deny_http: false
+        nginx_certbot_proxy_protocol: false
+        nginx_certbot_app:
+          name: app
+          url: "http://localhost:2000"
+          http_template_name: root
+          upstream_template_name: root_upstream
+```
 
-BSD
+## License
 
-Author Information
-------------------
+This role is licensed under the MIT License.
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
+## Author Information
+
+This role was created by Chadek.
+
+## Feedback and Contributions
+
+Please feel free to open an issue or submit a pull request on [GitHub](https://github.com/chadek/ansible-role-nginx-certbot) if you have any feedback or would like to contribute.
+
