@@ -10,7 +10,7 @@ name: CI
 
 defaults:
   run:
-    working-directory: "chadek.nginx-certbot"
+    working-directory: "chadek.nginx_certbot"
 
 jobs:
   lint:
