@@ -44,4 +44,4 @@
       src: "templates/nginx_reverse_proxy.j2",
       dest: "/etc/nginx/conf.d/{{ nginx_certbot_domain_name }}.conf",
     }
-  notify: reload nginx
+  notify: Reload nginx
