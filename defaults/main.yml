@@ -3,6 +3,7 @@
 nginx_certbot_domain_name: app.example.com
 nginx_certbot_certbot_email: some.mail@example.com
 nginx_certbot_deny_http: false
+nginx_certbot_proxy_protocol: false
 nginx_certbot_app:
   {
     name: app,
