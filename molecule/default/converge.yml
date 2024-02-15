@@ -12,6 +12,6 @@
       changed_when: false
 
   tasks:
-    - name: "Include nginx-certbot"
+    - name: "Include nginx_certbot"
       ansible.builtin.include_role:
-        name: "ansible-role-nginx-certbot"
+        name: "chadek.nginx_certbot"
