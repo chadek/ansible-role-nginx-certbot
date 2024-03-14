@@ -34,7 +34,7 @@
   tags: notest
   ansible.builtin.command: >-
     certbot certonly --authenticator webroot -w /var/www/letsencrypt  --noninteractive --agree-tos
-    --email {{ nginx_certbot_certbot_email }}-d {{ nginx_certbot_domain_name }} >> /var/log/certbot.log
+    --email {{ nginx_certbot_certbot_email }} -d {{ nginx_certbot_domain_name }} >> /var/log/certbot.log
   register: output
   changed_when: output.rc != 0
   when: not letsencrypt_cert.stat.exists
