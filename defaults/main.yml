@@ -4,10 +4,35 @@ nginx_certbot_domain_name: app.example.com
 nginx_certbot_certbot_email: some.mail@example.com
 nginx_certbot_deny_http: false
 nginx_certbot_proxy_protocol: false
+
+# whether use a provided examples by simply replacing with template name or
+# define a custom template filling up custom template variables as bellow
 nginx_certbot_app:
   {
     name: app,
     url: "http://localhost:2000",
-    http_template_name: root,
-    upstream_template_name: root_upstream,
+    http_template_name: custom,
+    upstream_template_name: custom_upstream,
+  }
+
+nginx_certbot_custom_http_block: |
+  client_max_body_size 128M;
+
+  location / {
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection 'upgrade';
+
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $scheme;
+
+    proxy_pass http://app-default;
+  }
+
+nginx_certbot_custom_upstream_block: |
+  upstream app-default {
+    zone app-default 64k;
+    server 127.0.0.1:000;
+    keepalive 2;
   }

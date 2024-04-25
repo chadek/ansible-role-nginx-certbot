@@ -40,10 +40,12 @@
   when: not letsencrypt_cert.stat.exists
 
 - name: Certbot | Log Certbot output
+  tags: notest
   ansible.builtin.lineinfile:
     dest: /var/log/certbot.log
     line: "{{ output }}"
     insertafter: EOF
+  when: not letsencrypt_cert.stat.exists
 
 - name: Certbot | Create repository to store renewal hook
   ansible.builtin.file:
