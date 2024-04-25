@@ -33,6 +33,6 @@ nginx_certbot_custom_http_block: |
 nginx_certbot_custom_upstream_block: |
   upstream app-default {
     zone app-default 64k;
-    server 127.0.0.1:000;
+    server 127.0.0.1:8000;
     keepalive 2;
   }
