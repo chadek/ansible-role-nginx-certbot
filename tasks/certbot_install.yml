@@ -20,7 +20,7 @@
 - name: Certbot | Copy nginx conf for certbot init
   ansible.builtin.template:
     src: templates/nginx_cerbot_init.j2
-    dest: /etc/nginx/sites-available/default
+    dest: /etc/nginx/sites-available/certbot
     owner: root
     group: root
     mode: '0644'
@@ -48,6 +48,13 @@
     mode: '0644'
     insertafter: EOF
   when: not letsencrypt_cert.stat.exists
+
+- name: Certbot | Disable nginx conf for certbot init
+  ansible.builtin.file:
+    path: /etc/nginx/sites-enabled/certbot
+    state: absent
+  when: not letsencrypt_cert.stat.exists
+  notify: Reload nginx
 
 - name: Certbot | Create repository to store renewal hook
   ansible.builtin.file:
