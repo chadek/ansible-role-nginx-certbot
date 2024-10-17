@@ -44,6 +44,8 @@
   ansible.builtin.lineinfile:
     dest: /var/log/certbot.log
     line: "{{ output }}"
+    create: true
+    mode: '0644'
     insertafter: EOF
   when: not letsencrypt_cert.stat.exists
 
