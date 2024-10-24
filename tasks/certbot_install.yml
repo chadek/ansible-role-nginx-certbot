@@ -20,7 +20,7 @@
 - name: Certbot | Copy nginx conf for certbot init
   ansible.builtin.template:
     src: templates/nginx_cerbot_init.j2
-    dest: /etc/nginx/sites-available/certbot
+    dest: /etc/nginx/sites-enabled/certbot
     owner: root
     group: root
     mode: '0644'
