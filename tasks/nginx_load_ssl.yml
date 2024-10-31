@@ -11,6 +11,17 @@
   community.crypto.openssl_dhparam:
     path: /etc/ssl/certs/dhparam.pem
     size: 4096
+  async: "{{ nginx_cerbot_dh_timeout }}"
+  poll: 0      # Do not wait for the task to complete
+  register: long_running_task
+
+- name: Nginx SSL | Check on the long-running task
+  ansible.builtin.async_status:
+    jid: "{{ long_running_task.ansible_job_id }}"
+  register: job_result
+  until: job_result.finished
+  retries: "{{ (nginx_cerbot_dh_timeout / 30) | int }}"
+  delay: 30
 
 - name: Nginx SSL | Create nginx conf directory
   ansible.builtin.file:
@@ -49,7 +60,7 @@
     owner: root
     group: root
     mode: "0644"
-  when: not letsencrypt_cert.stat.exists and nginx_certbot_ha is undefined
+  when: nginx_certbot_ha is undefined
   notify: Reload nginx
 
 - name: Nginx SSL | Copy nginx reverse proxy HA base conf
@@ -59,5 +70,5 @@
     owner: root
     group: root
     mode: "0644"
-  when: not letsencrypt_cert.stat.exists and nginx_certbot_ha is defined
+  when: nginx_certbot_ha is defined
   notify: Reload nginx
