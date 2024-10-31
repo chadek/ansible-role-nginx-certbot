@@ -31,14 +31,11 @@ server {
   # if letsencrypt endup on the wrong load-balancer (dns) pass request to the other     
   location @fallback {
     # deny proxy address to avoid loop
-{% set break_loop = false %}    
-{% for peer in nginx_certbot_ha.lb_peers %}
-{% if peer != ansible_default_ipv4.address and not break_loop %}
-    deny {{ peer }};
-    proxy_pass http://{{ peer }};
-{% set break_loop = true %}
-{% endif%}
-{% endfor %}
+{% set first_peer = (nginx_certbot_ha.lb_peers | select("ne", ansible_default_ipv4.address) | list | first) %}
+{% if first_peer is not none %}
+    deny {{ first_peer }};
+    proxy_pass http://{{ first_peer }};
+{% endif %}
     proxy_set_header Host $host;
   }
 
