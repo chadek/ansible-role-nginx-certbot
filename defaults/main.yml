@@ -36,3 +36,15 @@ nginx_certbot_custom_upstream_block: |
     server 127.0.0.1:8000;
     keepalive 2;
   }
+
+# increase default 10 sec value to prevent Diffie-Hellman cert generation 
+# to fail on low end machines
+# ansible_ssh_timeout: 2400
+
+# Add this variable to allow validate certbot on a load balanced environment
+# nginx_certbot_ha: {
+#   lb_peers: [
+#     ip1,
+#     ip2
+#   ]
+# }

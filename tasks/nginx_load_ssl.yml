@@ -40,8 +40,24 @@
       src: "templates/nginx_conf.d/{{ nginx_certbot_app.upstream_template_name }}.j2",
       dest: "/etc/nginx/conf.d/{{ nginx_certbot_domain_name }}.d/{{ nginx_certbot_app.name }}.upstream",
     }
-    - {
-      src: "templates/nginx_reverse_proxy.j2",
-      dest: "/etc/nginx/conf.d/{{ nginx_certbot_domain_name }}.conf",
-    }
+  notify: Reload nginx
+
+- name: Nginx SSL | Copy nginx reverse proxy base conf
+  ansible.builtin.template:
+    src: "templates/nginx_reverse_proxy.j2"
+    dest: "/etc/nginx/conf.d/{{ nginx_certbot_domain_name }}.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  when: not letsencrypt_cert.stat.exists and nginx_certbot_ha is undefined
+  notify: Reload nginx
+
+- name: Nginx SSL | Copy nginx reverse proxy HA base conf
+  ansible.builtin.template:
+    src: "templates/nginx_reverse_proxy_ha.j2"
+    dest: "/etc/nginx/conf.d/{{ nginx_certbot_domain_name }}.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  when: not letsencrypt_cert.stat.exists and nginx_certbot_ha is defined
   notify: Reload nginx

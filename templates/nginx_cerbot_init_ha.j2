@@ -1,0 +1,45 @@
+##
+# You should look at the following URL's in order to grasp a solid understanding
+# of Nginx configuration files in order to fully unleash the power of Nginx.
+# http://wiki.nginx.org/Pitfalls
+# http://wiki.nginx.org/QuickStart
+# http://wiki.nginx.org/Configuration
+#
+# Generally, you will want to move this file somewhere, and start with a clean
+# file but keep this around for reference. Or just disable in sites-enabled.
+#
+# Please see /usr/share/doc/nginx-doc/examples/ for more detailed examples.
+##
+
+server {
+  listen 80 default_server;
+  listen [::]:80 default_server;
+
+  server_name {{ nginx_certbot_domain_name }};
+  server_tokens off; ## Don't show the nginx version number, a security best practice
+
+  ## Individual nginx logs for this vhost
+  access_log  /var/log/nginx/letsencrypt_access.log;
+  error_log   /var/log/nginx/letsencrypt_error.log;
+
+  location ~ /\.well-known/acme-challenge {
+    allow all;
+    root /var/www/letsencrypt;
+    try_files $uri @fallback;
+  }
+
+  # if letsencrypt endup on the wrong load-balancer (dns) pass request to the other     
+  location @fallback {
+    # deny proxy address to avoid loop
+{% set first_peer = (nginx_certbot_ha.lb_peers | select("ne", ansible_default_ipv4.address) | list | first) %}
+{% if first_peer is not none %}
+    deny {{ first_peer }};
+    proxy_pass http://{{ first_peer }};
+{% endif %}
+    proxy_set_header Host $host;
+  }
+
+  # Deny access to . files
+  location ~ /\. { deny all; access_log off; log_not_found off; }
+
+}

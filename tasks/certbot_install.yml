@@ -24,7 +24,17 @@
     owner: root
     group: root
     mode: '0644'
-  when: not letsencrypt_cert.stat.exists
+  when: not letsencrypt_cert.stat.exists and nginx_certbot_ha is undefined
+  notify: Reload nginx
+
+- name: Certbot | Copy nginx HA conf for certbot init
+  ansible.builtin.template:
+    src: templates/nginx_cerbot_init_ha.j2
+    dest: /etc/nginx/sites-enabled/certbot
+    owner: root
+    group: root
+    mode: '0644'
+  when: not letsencrypt_cert.stat.exists and nginx_certbot_ha is defined
   notify: Reload nginx
 
 - name: Certbot | Flush handlers
