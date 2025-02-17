@@ -46,8 +46,12 @@
     certbot certonly --authenticator webroot -w /var/www/letsencrypt  --noninteractive --agree-tos
     --email {{ nginx_certbot_certbot_email }} -d {{ nginx_certbot_domain_name }}
   register: output
-  changed_when: output.rc != 0
-  when: not letsencrypt_cert.stat.exists
+  changed_when: output.rc == 0
+  when: not letsencrypt_cert.stat.exists and nginx_certbot_share_cert.state | default('master') == 'master'
+  notify: Sync cert
+
+- name: Certbot | Flush handlers
+  ansible.builtin.meta: flush_handlers
 
 - name: Certbot | Log Certbot output
   tags: notest

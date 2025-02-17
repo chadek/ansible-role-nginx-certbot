@@ -41,7 +41,15 @@ nginx_certbot_custom_upstream_block: |
 # value if your processor processor frequency is low (or shared)
 nginx_cerbot_dh_timeout: 1800
 
-# Add this variable to allow validate certbot on a load balanced environment
+# Add this variable to sync cert across other peers on a load balanced environment
+# nginx_certbot_share_cert: {
+#   state: master,
+#   peers: [
+#     2001:41d0:d00:5b00::200
+#   ]
+# }
+
+# Add this variable to allow certbot to validate several peers on a load balanced environment
 # nginx_certbot_ha: {
 #   lb_peers: [
 #     ip1,

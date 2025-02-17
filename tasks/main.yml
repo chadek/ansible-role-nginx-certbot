@@ -2,6 +2,10 @@
 - name: Nginx Certbot | Include nginx_install.yml
   ansible.builtin.include_tasks: nginx_install.yml
 
+- name: Nginx Certbot | Include sync_cert.yml
+  ansible.builtin.include_tasks: sync_cert.yml
+  when: nginx_certbot_share_cert is defined
+
 - name: Nginx Certbot | Include certbot_install.yml
   ansible.builtin.include_tasks: certbot_install.yml
 
