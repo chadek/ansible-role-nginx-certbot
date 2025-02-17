@@ -1,0 +1,81 @@
+---
+- name: Nginx Certbot | Generate ssh key for master
+  community.crypto.openssh_keypair:
+    path: /root/.ssh/id_ed25519
+    type: ed25519
+    state: present
+    owner: "root"
+    group: "root"
+    mode: '0600'
+  register: ssh_key
+  when: nginx_certbot_share_cert.state == "master"
+
+- name: Nginx Certbot | Retrieve master public key locally to file dir
+  ansible.builtin.fetch:
+    src: /root/.ssh/id_ed25519.pub
+    dest: "{{ role_path }}/files/master_id_ed25519.pub"
+    flat: true
+  when: nginx_certbot_share_cert.state == "master"
+
+- name: Nginx Certbot | Send master pub key to peers
+  ansible.builtin.blockinfile:
+    path: /root/.ssh/authorized_keys
+    create: true
+    mode: "0644"
+    block: |
+      command="rrsync /etc/letsencrypt", restrict {{ lookup('ansible.builtin.file', '{{ role_path }}/files/master_id_ed25519.pub') }}"
+  when: nginx_certbot_share_cert.state == "backup"
+
+- name: Nginx Certbot | Add user to AllowUsers
+  ansible.builtin.lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PermitRootLogin.*'
+    line: 'PermitRootLogin prohibit-password'
+    state: present
+    backrefs: true
+  when: nginx_certbot_share_cert.state == "backup"
+  notify: Reload sshd
+
+- name: Create user | Add user to AllowUsers
+  ansible.builtin.replace:
+    backup: true
+    dest: /etc/ssh/sshd_config
+    regexp: '^(AllowUsers(?!.*\broot\b).*)$'
+    replace: '\1 root'
+  when: nginx_certbot_share_cert.state == "backup"
+  notify: Reload sshd
+
+- name: Nginx Certbot | Send master pub key to peers
+  ansible.builtin.blockinfile:
+    path: /root/.ssh/authorized_keys
+    create: true
+    mode: "0644"
+    block: |
+      command="rrsync /etc/letsencrypt",no-agent-forwarding,no-port-forwarding,no-pty,no-user-rc,no-X11-forwarding {{ lookup('ansible.builtin.file', '{{ role_path }}/files/master_id_ed25519.pub') }}
+  when: nginx_certbot_share_cert.state == "backup"
+
+- name: Nginx Certbot | Send sync script
+  ansible.builtin.template:
+    src: templates/sync-certificates.j2
+    dest: /etc/letsencrypt/renewal-hooks/deploy/sync-certificates.sh
+    owner: root
+    group: root
+    mode: '0755'
+  when: nginx_certbot_share_cert.state == "master"
+
+- name: Nginx Certbot | Reload nginx monthly
+  ansible.builtin.template:
+    src: files/reload-nginx.sh
+    dest: /etc/cron.monthly/restart-nginx
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Nginx Certbot | Sync cert weekly
+  ansible.builtin.template:
+    src: templates/sync-certificates.j2
+    dest: /etc/cron.weekly/sync-certificates
+    owner: root
+    group: root
+    mode: '0755'
+  when: nginx_certbot_share_cert.state == "master"
