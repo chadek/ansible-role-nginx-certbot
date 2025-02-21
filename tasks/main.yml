@@ -1,6 +1,6 @@
 ---
 - name: Nginx Certbot | Include nginx_repo.yml
-  ansible.builtin.include_tasks: nginx_repo.yml
+  ansible.builtin.include_tasks: nginx_repo_{{ ansible_distribution | lower }}.yml
   when: nginx_certbot_repo is defined
 
 - name: Nginx Certbot | Include nginx_install.yml
@@ -15,3 +15,7 @@
 
 - name: Nginx Certbot | Include nginx_load_ssl.yml
   ansible.builtin.include_tasks: nginx_load_ssl.yml
+
+- name: Nginx Certbot | Include nginx_stream.yml
+  ansible.builtin.include_tasks: nginx_stream.yml
+  when: nginx_certbot_custom_stream_block is defined

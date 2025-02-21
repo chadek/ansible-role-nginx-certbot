@@ -1,0 +1,20 @@
+---
+
+- name: Nginx Ajouter un bloc de configuration avant
+  ansible.builtin.blockinfile:
+    path: /etc/nginx/nginx.conf
+    insertbefore: '^#mail {'
+    block: |
+      stream {
+        include /etc/nginx/conf.d/*.stream;
+      }
+  notify: Reload nginx
+
+- name: Nginx SSL | Copy nginx reverse proxy HA base conf
+  ansible.builtin.template:
+    src: "templates/nginx_conf.d/custom_stream.j2"
+    dest: "/etc/nginx/conf.d/{{ nginx_certbot_stream_name }}.stream"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload nginx
