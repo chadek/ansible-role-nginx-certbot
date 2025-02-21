@@ -1,0 +1,19 @@
+#!/bin/bash
+
+#### Ansible Manage script ####
+# Define variables
+CERT_DIR="/etc/letsencrypt/*"
+REMOTE_USER="root"          # SSH user for the secondary load balancer
+REMOTE_HOSTS=({% for peer in nginx_certbot_share_cert.peers %}{{ peer }} {% endfor %}) # List of secondary load balancers
+RSYNC_OPTIONS="-avz --delete"
+NGINX_RELOAD_CMD="systemctl reload nginx"
+# Sync certificates to all secondary load balancers
+for HOST in "${REMOTE_HOSTS[@]}"; do
+    echo "Syncing certificates to $HOST..."
+    rsync $RSYNC_OPTIONS $CERT_DIR $REMOTE_USER@[${HOST}]:
+    if [ $? -eq 0 ]; then
+        echo "Certificates synced successfully to $HOST"
+    else
+        echo "Failed to sync certificates to $HOST" >&2
+    fi
+done
