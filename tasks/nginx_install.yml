@@ -3,3 +3,9 @@
   ansible.builtin.package:
     name: nginx
     state: present
+
+- name: Nginx | Install Nginx-full
+  ansible.builtin.package:
+    name: nginx-full
+    state: present
+  when: nginx_certbot_custom_stream_block is defined

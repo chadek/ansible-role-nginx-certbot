@@ -4,8 +4,24 @@ dependency:
 driver:
   name: docker
 platforms:
-  - name: instance
+  - name: nginx-simple
     image: "geerlingguy/docker-debian12-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+  - name: nginx-stream
+    image: "geerlingguy/docker-debian12-ansible:latest"
+    command: ${MOLECULE_DOCKER_COMMAND:-""}
+    volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:rw
+    cgroupns_mode: host
+    privileged: true
+    pre_build_image: true
+  - name: nginx-stream-ubuntu
+    image: "geerlingguy/docker-ubuntu2404-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:
       - /sys/fs/cgroup:/sys/fs/cgroup:rw
@@ -14,5 +30,25 @@ platforms:
     pre_build_image: true
 provisioner:
   name: ansible
+  env:
+    ANSIBLE_ROLES_PATH: ../../../
+  inventory:
+    host_vars:
+      nginx-stream-ubuntu:
+        nginx_certbot_repo: "nginx-mainline"
+      nginx-stream:
+        nginx_certbot_repo: "nginx-mainline"
+        nginx_certbot_stream_name: mysql
+        nginx_certbot_custom_stream_block: |
+          upstream mysql-stream {
+            hash $remote_addr consistent;
+            server 127.0.0.1:8080;
+          }
+          server {
+            listen 0.0.0.0:8080;
+            listen [::]:8080;
+            proxy_pass mysql-stream;
+            proxy_connect_timeout 30s;
+          }
 verifier:
   name: ansible

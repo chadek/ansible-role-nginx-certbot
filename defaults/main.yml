@@ -41,6 +41,23 @@ nginx_certbot_custom_upstream_block: |
 # value if your processor processor frequency is low (or shared)
 nginx_cerbot_dh_timeout: 1800
 
+# Add this variables to stream connexions to upstream
+# nginx_certbot_stream_name: mysql
+# nginx_certbot_custom_stream_block: |
+#   upstream mysql-stream {
+#     hash $remote_addr consistent;
+#     server 127.0.0.1:8080;
+#   }
+#   server {
+#     listen 0.0.0.0:8080;
+#     listen [::]:8080;
+#     proxy_pass mysql-stream;
+#     proxy_connect_timeout 30s;
+#   }
+
+# Add this variable to install nginx latest package
+# nginx_certbot_repo: "nginx-mainline"
+
 # Add this variable to sync cert across other peers on a load balanced environment
 # nginx_certbot_share_cert: {
 #   state: master,
