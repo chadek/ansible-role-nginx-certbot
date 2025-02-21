@@ -1,4 +1,8 @@
 ---
+- name: Nginx Certbot | Include nginx_repo.yml
+  ansible.builtin.include_tasks: nginx_repo.yml
+  when: nginx_certbot_repo is defined
+
 - name: Nginx Certbot | Include nginx_install.yml
   ansible.builtin.include_tasks: nginx_install.yml
 
