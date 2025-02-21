@@ -1,0 +1,19 @@
+---
+- name: Nginx | Add nginx ubuntu apt key.
+  ansible.builtin.get_url:
+    url: https://keyserver.ubuntu.com/pks/lookup?op=get&search=0xb8dc7e53946656efbce4c1dd71daeaab4ad4cab6
+    dest: /usr/share/keyrings/sury.asc
+    mode: '0644'
+    force: true
+
+- name: Nginx | Add nginx ubuntu repository.
+  apt_repository:
+    repo: 'deb [signed-by=/usr/share/keyrings/sury.asc] https://ppa.launchpadcontent.net/ondrej/{{ nginx_certbot_repo }}/ubuntu {{ ansible_distribution_release }} main'
+    state: present
+    update_cache: true
+    
+- name: Nginx | Add nginx ubuntu repository.
+  apt_repository:
+    repo: 'deb-src [signed-by=/usr/share/keyrings/sury.asc] https://ppa.launchpadcontent.net/ondrej/{{ nginx_certbot_repo }}/ubuntu {{ ansible_distribution_release }} main'
+    state: present
+    update_cache: true

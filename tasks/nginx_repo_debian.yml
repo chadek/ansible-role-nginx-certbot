@@ -1,0 +1,12 @@
+---
+- name: Nginx | Add nginx debian apt key.
+  ansible.builtin.get_url:
+    url: https://packages.sury.org/apt.gpg
+    dest: /usr/share/keyrings/sury.gpg
+    mode: '0644'
+
+- name: Nginx | Add nginx debian repository.
+  apt_repository:
+    repo: 'deb [signed-by=/usr/share/keyrings/sury.gpg] https://packages.sury.org/{{ nginx_certbot_repo }} {{ ansible_distribution_release }} main'
+    state: present
+    update_cache: true

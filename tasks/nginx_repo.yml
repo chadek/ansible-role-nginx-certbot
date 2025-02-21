@@ -1,4 +1,0 @@
----
-- name: Nginx | Add nginx repository from PPA
-  ansible.builtin.apt_repository:
-    repo: "{{ nginx_certbot_repo }}"
