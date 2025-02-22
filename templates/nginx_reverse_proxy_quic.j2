@@ -1,0 +1,74 @@
+##
+# You should look at the following URL's in order to grasp a solid understanding
+# of Nginx configuration files in order to fully unleash the power of Nginx.
+# http://wiki.nginx.org/Pitfalls
+# http://wiki.nginx.org/QuickStart
+# http://wiki.nginx.org/Configuration
+#
+# Generally, you will want to move this file somewhere, and start with a clean
+# file but keep this around for reference. Or just disable in sites-enabled.
+#
+# Please see /usr/share/doc/nginx-doc/examples/ for more detailed examples.
+##
+
+# include upstream configuration
+include /etc/nginx/conf.d/{{ nginx_certbot_domain_name }}.d/*.upstream;
+
+### HTTP server for let'sencrypt validation
+server {
+  listen 80;
+  listen [::]:80;
+
+  server_name {{ nginx_certbot_domain_name }};
+  server_tokens off; ## Don't show the nginx version number, a security best practice
+
+  ## Individual nginx logs for this vhost
+  access_log  /var/log/nginx/letsencrypt_access.log;
+  error_log   /var/log/nginx/letsencrypt_error.log;
+
+  location ~ /\.well-known/acme-challenge {
+    allow all;
+    root /var/www/letsencrypt;
+  }
+
+  # redirect to https
+  location / {
+    return 301 https://$server_name$request_uri;
+  }
+
+}
+
+{% if nginx_certbot_proxy_protocol is sameas true %}
+log_format proxy_https '$proxy_protocol_addr - $remote_user [$time_local] '
+                       '"$request" $status $body_bytes_sent '
+                       '"$http_referer" "$http_user_agent"';
+
+{% endif %}
+
+### HTTPS server
+server {
+  # SSL configuration
+  listen 443 ssl {% if nginx_certbot_proxy_protocol is sameas true %} proxy_protocol{% endif %};
+  listen 443 quic reuseport;
+  listen [::]:443 ssl {% if nginx_certbot_proxy_protocol is sameas true %} proxy_protocol{% endif %};
+  listen [::]:443 quic reuseport;
+
+  http2 on;
+  http3 on;
+
+  include snippets/ssl-params.conf;
+  ssl_certificate /etc/letsencrypt/live/{{ nginx_certbot_domain_name }}/fullchain.pem;
+  ssl_certificate_key /etc/letsencrypt/live/{{ nginx_certbot_domain_name }}/privkey.pem;
+
+  server_name {{ nginx_certbot_domain_name }};
+  server_tokens off; ## Don't show the nginx version number, a security best practice
+
+  ## Individual nginx logs for {{ nginx_certbot_app.name }}
+  access_log  /var/log/nginx/{{ nginx_certbot_app.name }}_access.log;
+  error_log   /var/log/nginx/{{ nginx_certbot_app.name }}_error.log;
+
+  # Updated Alt-Svc header to include h3-29 for broader compatibility
+  add_header Alt-Svc 'h3=":443"; ma=86400, h3-29=":443"; ma=86400' always;
+
+  include /etc/nginx/conf.d/{{ nginx_certbot_domain_name }}.d/*.conf;
+}

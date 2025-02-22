@@ -13,6 +13,10 @@
 - name: Nginx Certbot | Include certbot_install.yml
   ansible.builtin.include_tasks: certbot_install.yml
 
+- name: Nginx Certbot | Include nginx_quic.yml
+  ansible.builtin.include_tasks: nginx_quic.yml
+  when: nginx_certbot_quic is true
+
 - name: Nginx Certbot | Include nginx_load_ssl.yml
   ansible.builtin.include_tasks: nginx_load_ssl.yml
 

@@ -1,0 +1,18 @@
+---
+- name: Nginx QUIC | Generate the random base64-encoded quic_host_key
+  ansible.builtin.set_fact:
+    quic_host_key: "{{ lookup('community.general.random_string', length=32, base64=True) }}"
+
+- name: Nginx QUIC | Write key to a file
+  ansible.builtin.copy:
+    content: "{{ quic_host_key }}"
+    dest: /etc/nginx/snippets/quic_host.key
+
+- name: Nginx QUIC | Copy nginx general quic configuration
+  ansible.builtin.template:
+    src: "templates/nginx_conf.d/quic.j2"
+    dest: "/etc/nginx/conf.d/quic.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload nginx
