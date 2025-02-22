@@ -60,7 +60,7 @@
     owner: root
     group: root
     mode: "0644"
-  when: nginx_certbot_ha is undefined
+  when: nginx_certbot_ha is undefined and nginx_certbot_quic is false
   notify: Reload nginx
 
 - name: Nginx SSL | Copy nginx reverse proxy HA base conf
@@ -71,4 +71,14 @@
     group: root
     mode: "0644"
   when: nginx_certbot_ha is defined
+  notify: Reload nginx
+
+- name: Nginx SSL | Copy nginx reverse proxy base conf for http3
+  ansible.builtin.template:
+    src: "templates/nginx_reverse_proxy_quic.j2"
+    dest: "/etc/nginx/conf.d/{{ nginx_certbot_domain_name }}.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  when: nginx_certbot_quic is true
   notify: Reload nginx

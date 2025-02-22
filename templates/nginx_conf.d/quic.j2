@@ -1,0 +1,7 @@
+    # Global HTTP/3 settings
+    http3_stream_buffer_size 1m;
+    quic_retry on;
+    quic_gso on;
+
+    # Generate this key using: openssl rand -base64 32
+    quic_host_key /etc/nginx/snippets/quic_host.key;
