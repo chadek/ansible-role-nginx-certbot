@@ -37,6 +37,9 @@ nginx_certbot_custom_upstream_block: |
     keepalive 2;
   }
 
+# Enable quic (needs nginx_certbot_repo set to nginx-mainline if enabled)
+nginx_certbot_quic: false
+
 # timeout in sec for Diffie-Hellman cert generation. Consider increasing this
 # value if your processor processor frequency is low (or shared)
 nginx_cerbot_dh_timeout: 1800

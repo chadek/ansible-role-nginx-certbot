@@ -20,7 +20,7 @@ platforms:
     cgroupns_mode: host
     privileged: true
     pre_build_image: true
-  - name: nginx-stream-ubuntu
+  - name: nginx-quic-ubuntu
     image: "geerlingguy/docker-ubuntu2404-ansible:latest"
     command: ${MOLECULE_DOCKER_COMMAND:-""}
     volumes:
@@ -34,8 +34,9 @@ provisioner:
     ANSIBLE_ROLES_PATH: ../../../
   inventory:
     host_vars:
-      nginx-stream-ubuntu:
+      nginx-quic-ubuntu:
         nginx_certbot_repo: "nginx-mainline"
+        nginx_certbot_quic: true
       nginx-stream:
         nginx_certbot_repo: "nginx-mainline"
         nginx_certbot_stream_name: mysql
