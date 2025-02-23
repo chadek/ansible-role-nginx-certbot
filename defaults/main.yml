@@ -37,12 +37,20 @@ nginx_certbot_custom_upstream_block: |
     keepalive 2;
   }
 
-# Enable quic (needs nginx_certbot_repo set to nginx-mainline if enabled)
+# Enable quic
+# (by now, needs nginx_certbot_repo set to nginx-mainline if enabled)
 nginx_certbot_quic: false
 
 # timeout in sec for Diffie-Hellman cert generation. Consider increasing this
 # value if your processor processor frequency is low (or shared)
 nginx_cerbot_dh_timeout: 1800
+
+# Add this variable to activate general resolver configuration
+# (by now, needs nginx_certbot_repo set to nginx-mainline if enabled)
+# nginx_certbot_resolver: {
+#   resolver: "127.0.0.53",
+#   resolver_timeout: "20s"
+# }
 
 # Add this variables to stream connexions to upstream
 # nginx_certbot_stream_name: mysql

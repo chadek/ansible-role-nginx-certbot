@@ -1,0 +1,9 @@
+---
+- name: Nginx Resolver | Copy nginx general resolver configuration
+  ansible.builtin.template:
+    src: "templates/nginx_conf.d/resolver.j2"
+    dest: "/etc/nginx/conf.d/resolver.conf"
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload nginx

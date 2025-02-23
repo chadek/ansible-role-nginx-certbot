@@ -37,6 +37,10 @@ provisioner:
       nginx-quic-ubuntu:
         nginx_certbot_repo: "nginx-mainline"
         nginx_certbot_quic: true
+        nginx_certbot_resolver: {
+          resolver: "127.0.0.53",
+          resolver_timeout: "20s"
+        }
       nginx-stream:
         nginx_certbot_repo: "nginx-mainline"
         nginx_certbot_stream_name: mysql
