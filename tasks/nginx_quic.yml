@@ -1,12 +1,22 @@
 ---
+- name: Nginx QUIC | Check if quic key already exist
+  ansible.builtin.stat:
+    path: /etc/nginx/snippets/quic_host.key
+  register: key_path
+
 - name: Nginx QUIC | Generate the random base64-encoded quic_host_key
   ansible.builtin.set_fact:
     quic_host_key: "{{ lookup('community.general.random_string', length=32, base64=True) }}"
+  when: not key_path.stat.exists
 
 - name: Nginx QUIC | Write key to a file
   ansible.builtin.copy:
     content: "{{ quic_host_key }}"
     dest: /etc/nginx/snippets/quic_host.key
+    owner: root
+    group: root
+    mode: "0644"
+  when: not key_path.stat.exists
 
 - name: Nginx QUIC | Copy nginx general quic configuration
   ansible.builtin.template:
