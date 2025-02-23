@@ -17,6 +17,10 @@
   ansible.builtin.include_tasks: nginx_quic.yml
   when: nginx_certbot_quic is true
 
+- name: Nginx Certbot | Include nginx_resolver.yml
+  ansible.builtin.include_tasks: nginx_resolver.yml
+  when: nginx_certbot_resolver is defined
+
 - name: Nginx Certbot | Include nginx_load_ssl.yml
   ansible.builtin.include_tasks: nginx_load_ssl.yml
 
