@@ -12,6 +12,15 @@
     name: certbot
     state: present
 
+- name: Nginx Certbot | Send sync script
+  ansible.builtin.template:
+    src: templates/sync-certificates.j2
+    dest: /etc/letsencrypt/renewal-hooks/deploy/sync-certificates.sh
+    owner: root
+    group: root
+    mode: '0755'
+  when: nginx_certbot_share_cert is defined and nginx_certbot_share_cert.state == "master"
+
 - name: Certbot | Check if certificate already exists
   ansible.builtin.stat:
     path: "/etc/letsencrypt/live/{{ nginx_certbot_domain_name }}/cert.pem"
