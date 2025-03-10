@@ -12,6 +12,15 @@
     name: certbot
     state: present
 
+- name: Certbot | Ensures renewal-hooks/deploy dir exists
+  ansible.builtin.file:
+    path: "/etc/letsencrypt/renewal-hooks/deploy"
+    owner: root
+    group: root
+    mode: '0755'
+    state: directory
+  when: nginx_certbot_share_cert is defined and nginx_certbot_share_cert.state == "master"
+
 - name: Nginx Certbot | Send sync script
   ansible.builtin.template:
     src: templates/sync-certificates.j2
