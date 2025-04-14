@@ -5,6 +5,7 @@
     dest: /usr/share/keyrings/sury.asc
     mode: '0644'
     force: true
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: Nginx | Add nginx ubuntu repository.
   apt_repository:

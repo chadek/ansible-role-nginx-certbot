@@ -1,9 +1,16 @@
 ---
-- name: Reload nginx
+- name: Check if nginx syntax is good
+  ansible.builtin.command: nginx -t
+  register: result
+  changed_when: result.rc != 0
+  listen: Reload nginx
+
+- name: Reload nginx if conf is ok
   ansible.builtin.systemd:
     name: nginx
     state: reloaded
-  when: molecule_yml is not defined
+  when: molecule_yml is not defined and result
+  listen: Reload nginx
 
 - name: Reload sshd
   ansible.builtin.systemd:
