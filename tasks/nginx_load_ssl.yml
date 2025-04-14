@@ -14,6 +14,7 @@
   async: "{{ nginx_cerbot_dh_timeout }}"
   poll: 0      # Do not wait for the task to complete
   register: long_running_task
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: Nginx SSL | Check on the long-running task
   ansible.builtin.async_status:
@@ -22,6 +23,7 @@
   until: job_result.finished
   retries: "{{ (nginx_cerbot_dh_timeout / 30) | int }}"
   delay: 30
+  ignore_errors: "{{ ansible_check_mode }}"
 
 - name: Nginx SSL | Create nginx conf directory
   ansible.builtin.file:
