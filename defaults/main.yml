@@ -70,7 +70,7 @@ nginx_cerbot_dh_timeout: 1800
 #   }
 
 # Add this variable to install nginx latest package
-# nginx_certbot_repo: "nginx-mainline"
+# nginx_certbot_repo: "nginx"
 
 # Add this variable to sync cert across other peers on a load balanced environment
 # nginx_certbot_share_cert: {
