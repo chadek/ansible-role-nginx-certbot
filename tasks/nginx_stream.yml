@@ -6,6 +6,7 @@
     block: |
       stream {
         include /etc/nginx/conf.d/*.stream;
+        include /etc/nginx/conf.d/resolver.conf;
       }
   notify: Reload nginx
 
