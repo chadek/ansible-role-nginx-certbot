@@ -14,4 +14,4 @@
   tasks:
     - name: "Include nginx_certbot"
       ansible.builtin.include_role:
-        name: "chadek.nginx_certbot"
+        name: "ansible-role-nginx-certbot"

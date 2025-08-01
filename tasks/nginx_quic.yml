@@ -15,7 +15,7 @@
     dest: /etc/nginx/snippets/quic_host.key
     owner: root
     group: root
-    mode: "0644"
+    mode: "0600"
   when: not key_path.stat.exists
 
 - name: Nginx QUIC | Copy nginx general quic configuration
