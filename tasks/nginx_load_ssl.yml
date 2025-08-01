@@ -8,6 +8,7 @@
     mode: "0644"
 
 - name: Nginx SSL | Generate strong Diffie-Hellman parameters (may take a few minutes)
+  tags: notest
   community.crypto.openssl_dhparam:
     path: /etc/ssl/certs/dhparam.pem
     size: 4096
@@ -17,6 +18,7 @@
   ignore_errors: "{{ ansible_check_mode }}"
 
 - name: Nginx SSL | Check on the long-running task
+  tags: notest
   ansible.builtin.async_status:
     jid: "{{ long_running_task.ansible_job_id }}"
   register: job_result

@@ -35,14 +35,15 @@ provisioner:
   inventory:
     host_vars:
       nginx-quic-ubuntu:
-        nginx_certbot_repo: "nginx-mainline"
+        nginx_certbot_repo: "nginx"
         nginx_certbot_quic: true
+        nginx_certbot_quic_gso: true
         nginx_certbot_resolver: {
           resolver: "127.0.0.53",
           resolver_timeout: "20s"
         }
       nginx-stream:
-        nginx_certbot_repo: "nginx-mainline"
+        nginx_certbot_repo: "nginx"
         nginx_certbot_stream_name: mysql
         nginx_certbot_custom_stream_block: |
           upstream mysql-stream {

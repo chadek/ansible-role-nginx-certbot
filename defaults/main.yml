@@ -38,11 +38,14 @@ nginx_certbot_custom_upstream_block: |
   }
 
 # Enable quic
-# (by now, needs nginx_certbot_repo set to nginx-mainline if enabled)
+# (by now, needs nginx_certbot_repo set to nginx if enabled)
 nginx_certbot_quic: false
 # Option must be use just ones per IP, pay attention to set to false
 # for all vhost but one if you setup multihost environment
 nginx_certbot_quic_reuseport: true
+
+# Enables UDP off-loading for quic
+nginx_certbot_quic_gso: false
 
 # timeout in sec for Diffie-Hellman cert generation. Consider increasing this
 # value if your processor processor frequency is low (or shared)
