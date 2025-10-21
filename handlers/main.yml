@@ -10,7 +10,7 @@
   ansible.builtin.systemd:
     name: nginx
     state: reloaded
-  when: molecule_yml is not defined and result
+  when: molecule_yml is not defined and result.rc == 0
   listen: Reload nginx
 
 - name: Reload sshd
